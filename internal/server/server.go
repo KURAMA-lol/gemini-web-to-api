@@ -29,6 +29,7 @@ func NewGeminiWebToAPI(log *zap.Logger, cfg *configs.Config) *fiber.App {
 	}))
 
 	app.Use(recover.New())
+	app.Use(APIKeyAuth(cfg.Server.APIAuthKey))
 
 	if cfg.RateLimit.Enabled {
 		app.Use(limiter.New(limiter.Config{

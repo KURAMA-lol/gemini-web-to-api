@@ -221,6 +221,7 @@ Image, video and music generation report no token counts.
 | `GEMINI_TEMPORARY`        | ❌ No    | `false` | Enable stateless/incognito mode for all requests                 |
 | `GEMINI_VIDEO_TIMEOUT_MINUTES` | ❌ No | `10` | Minutes a video job may take (maximum `60`); only one video job runs at a time |
 | `GEMINI_COOKIE_API_KEY`   | ❌ No    | —       | Bearer token that enables `POST /admin/cookies`, see below       |
+| `API_AUTH_KEY`             | ✅ Yes   | —       | Required Bearer token for all API endpoints; use a random secret of at least 32 characters |
 | `PORT`                    | ❌ No    | `4981`  | Server port                                                      |
 | `RATE_LIMIT_ENABLED`      | ❌ No    | `false` | Enable or disable rate limiting                                  |
 | `RATE_LIMIT_WINDOW_MS`    | ❌ No    | `60000` | Rate limit time window in milliseconds                           |
@@ -269,6 +270,19 @@ curl -X POST http://localhost:4981/admin/cookies \
 - `GET /admin/cookies` (same bearer token) reports a short SHA-256 fingerprint
   of `__Secure-1PSID`, the cache age, the last update time and the update
   source. It never returns cookie values.
+
+### API authentication
+
+Set `API_AUTH_KEY` to a long random secret (at least 32 characters). All API routes, including OpenAI, Claude, Gemini and admin routes, require this header:
+
+```bash
+curl -X POST https://YOUR_HOST/openai/v1/chat/completions \
+  -H "Authorization: Bearer $API_AUTH_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gemini-auto","messages":[{"role":"user","content":"Hello!"}]}'
+```
+
+The `/health`, `/docs`, `/openapi.json` endpoints and CORS preflight requests remain public for monitoring and SDK setup. Missing or incorrect keys receive HTTP 401. The key is compared in constant time and is never logged. `GEMINI_COOKIE_API_KEY` remains a separate credential for the cookie-management endpoint.
 
 ### Configuration Priority
 

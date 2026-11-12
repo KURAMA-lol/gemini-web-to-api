@@ -52,7 +52,8 @@ type OpenAIConfig struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port       string
+	APIAuthKey string
 }
 
 const (
@@ -77,6 +78,7 @@ func New() (*Config, error) {
 
 	// Server
 	cfg.Server.Port = getEnv("PORT", defaultServerPort)
+	cfg.Server.APIAuthKey = strings.TrimSpace(os.Getenv("API_AUTH_KEY"))
 
 	// General
 	cfg.LogLevel = getEnv("LOG_LEVEL", defaultLogLevel)
@@ -138,6 +140,11 @@ func (c *Config) Validate() error {
 		missingVars = append(missingVars, "GEMINI_COOKIES")
 	} else if c.Gemini.Secure1PSID == "" || c.Gemini.Secure1PSIDTS == "" {
 		return fmt.Errorf("GEMINI_COOKIES must contain __Secure-1PSID and __Secure-1PSIDTS")
+	}
+
+	// Require a strong API key so the public deployment cannot start unauthenticated.
+	if len(c.Server.APIAuthKey) < 32 {
+		return fmt.Errorf("API_AUTH_KEY must be set and contain at least 32 characters")
 	}
 
 	// Check Server port is valid
