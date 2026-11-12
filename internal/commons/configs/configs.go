@@ -138,8 +138,8 @@ func (c *Config) Validate() error {
 
 	if strings.TrimSpace(c.Gemini.Cookies) == "" {
 		missingVars = append(missingVars, "GEMINI_COOKIES")
-	} else if c.Gemini.Secure1PSID == "" || c.Gemini.Secure1PSIDTS == "" {
-		return fmt.Errorf("GEMINI_COOKIES must contain __Secure-1PSID and __Secure-1PSIDTS")
+	} else if c.Gemini.Secure1PSID == "" {
+		return fmt.Errorf("GEMINI_COOKIES must contain __Secure-1PSID")
 	}
 
 	// Require a strong API key so the public deployment cannot start unauthenticated.
