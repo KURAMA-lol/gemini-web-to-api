@@ -125,6 +125,7 @@ func (s *OpenAIService) CreateChatCompletion(ctx context.Context, req dto.ChatCo
 	if req.HasToolsEnabled() {
 		prompt = s.buildToolBridgePrompt(req, prompt)
 	}
+	prompt = utils.AppendDefaultGeminiIdentity(prompt)
 
 	opts := []providers.GenerateOption{providers.WithThinkingLevel(geminiThinkingLevel(req.ReasoningEffort))}
 	if req.Model != "" {

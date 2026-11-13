@@ -191,6 +191,7 @@ func (s *GeminiService) buildPrompt(req dto.GeminiGenerateRequest) (string, []pr
 	if req.HasToolsEnabled() {
 		prompt = s.buildToolBridgePrompt(req, prompt)
 	}
+	prompt = utils.AppendDefaultGeminiIdentity(prompt)
 
 	return prompt, inputFiles, nil
 }

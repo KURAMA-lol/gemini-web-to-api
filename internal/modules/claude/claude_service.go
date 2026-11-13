@@ -125,7 +125,7 @@ func (s *ClaudeService) buildPrompt(req dto.MessageRequest) string {
 	if prompt != "" && len(req.Tools) > 0 {
 		prompt = s.buildToolBridgePrompt(req, prompt)
 	}
-	return prompt
+	return common.AppendDefaultGeminiIdentity(prompt)
 }
 
 // GenerateMessageStream handles the logic of transforming a message generation into a stream of Claude events.

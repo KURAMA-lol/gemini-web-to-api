@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"gemini-web-to-api/internal/modules/gemini/dto"
+	"gemini-web-to-api/internal/commons/utils"
 	"gemini-web-to-api/internal/modules/providers"
 
 	"github.com/gofiber/fiber/v3"
@@ -36,8 +37,8 @@ func TestGeminiBuildPrompt(t *testing.T) {
 		if len(files) != 0 {
 			t.Errorf("expected 0 files, got %d", len(files))
 		}
-		if prompt != "Hello, world!" {
-			t.Errorf("got %q, want %q", prompt, "Hello, world!")
+		if !strings.Contains(prompt, "Hello, world!") || !strings.HasSuffix(prompt, utils.DefaultGeminiIdentity) {
+			t.Errorf("prompt must preserve the user message and end with the default identity: %q", prompt)
 		}
 	})
 
@@ -56,8 +57,9 @@ func TestGeminiBuildPrompt(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if want := "User: Which box?\nModel: The mixed one.\nUser: Why?"; prompt != want {
-			t.Errorf("got %q, want %q", prompt, want)
+		want := "User: Which box?\nModel: The mixed one.\nUser: Why?"
+		if !strings.HasPrefix(prompt, want) || !strings.HasSuffix(prompt, utils.DefaultGeminiIdentity) {
+			t.Errorf("got %q, want conversation followed by default identity", prompt)
 		}
 	})
 
